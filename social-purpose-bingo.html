@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Purpose Bingo</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 3px;
+            background-color: #333;
+            padding: 3px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .bingo-cell {
+            background: linear-gradient(145deg, #f0f0f0, #ffffff);
+            border: none;
+            padding: 15px 8px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .bingo-cell:hover {
+            background: linear-gradient(145deg, #e8f4fd, #d1ecf1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .bingo-cell.marked {
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            color: white;
+            transform: scale(0.95);
+        }
+
+        .bingo-cell.marked:hover {
+            background: linear-gradient(145deg, #45a049, #4CAF50);
+        }
+
+        .instructions {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .reset-btn {
+            background: linear-gradient(145deg, #ff6b6b, #ee5a52);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .reset-btn:hover {
+            background: linear-gradient(145deg, #ee5a52, #ff6b6b);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 600px) {
+            .bingo-cell {
+                font-size: 9px;
+                padding: 10px 5px;
+                min-height: 50px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Social Purpose Bingo</h1>
+        <p class="subtitle">Making a difference, one square at a time!</p>
+        
+        <div class="bingo-grid" id="bingoGrid">
+            <!-- Grid will be populated by JavaScript -->
+        </div>
+        
+        <div style="text-align: center;">
+            <button class="reset-btn" onclick="resetBoard()">🔄 Reset Board</button>
+        </div>
+        
+        <div class="instructions">
+            Click on squares to mark activities you've completed or want to commit to!<br>
+            Try to get a full row, column, or diagonal to make BINGO! 🎉
+        </div>
+    </div>
+
+    <script>
+        const socialPurposeItems = [
+            "Volunteer at a local shelter",
+            "Donate to charity",
+            "Reduce plastic usage",
+            "Support local businesses",
+            "Mentor someone",
+            "Plant a tree",
+            "Advocate for social justice",
+            "Participate in community cleanup",
+            "Support mental health awareness",
+            "Promote diversity & inclusion",
+            "Help a neighbor",
+            "Reduce food waste",
+            "Use public transportation",
+            "Support renewable energy",
+            "Educate others on climate change",
+            "Vote in elections",
+            "Support fair trade products",
+            "Volunteer for literacy programs",
+            "Donate blood",
+            "Support LGBTQ+ rights",
+            "Help elderly community members",
+            "Participate in food drives",
+            "Support accessible design",
+            "Promote gender equality",
+            "Reduce water consumption",
+            "Support refugee assistance",
+            "Advocate for animal welfare",
+            "Support affordable housing",
+            "Promote digital inclusion",
+            "Support healthcare access",
+            "Fight against discrimination",
+            "Support education funding",
+            "Promote sustainable fashion",
+            "Support disaster relief",
+            "Advocate for workers' rights",
+            "Support environmental protection"
+        ];
+
+        function createBingoBoard() {
+            const grid = document.getElementById('bingoGrid');
+            grid.innerHTML = '';
+            
+            // Shuffle the items array
+            const shuffledItems = [...socialPurposeItems].sort(() => Math.random() - 0.5);
+            
+            for (let i = 0; i < 36; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'bingo-cell';
+                cell.textContent = shuffledItems[i];
+                cell.onclick = () => toggleCell(cell);
+                grid.appendChild(cell);
+            }
+        }
+
+        function toggleCell(cell) {
+            cell.classList.toggle('marked');
+            checkForBingo();
+        }
+
+        function checkForBingo() {
+            const cells = document.querySelectorAll('.bingo-cell');
+            const grid = Array.from(cells).map(cell => cell.classList.contains('marked'));
+            
+            // Check rows
+            for (let row = 0; row < 6; row++) {
+                let rowComplete = true;
+                for (let col = 0; col < 6; col++) {
+                    if (!grid[row * 6 + col]) {
+                        rowComplete = false;
+                        break;
+                    }
+                }
+                if (rowComplete) {
+                    celebrateBingo();
+                    return;
+                }
+            }
+            
+            // Check columns
+            for (let col = 0; col < 6; col++) {
+                let colComplete = true;
+                for (let row = 0; row < 6; row++) {
+                    if (!grid[row * 6 + col]) {
+                        colComplete = false;
+                        break;
+                    }
+                }
+                if (colComplete) {
+                    celebrateBingo();
+                    return;
+                }
+            }
+            
+            // Check diagonals
+            let diagonal1 = true, diagonal2 = true;
+            for (let i = 0; i < 6; i++) {
+                if (!grid[i * 6 + i]) diagonal1 = false;
+                if (!grid[i * 6 + (5 - i)]) diagonal2 = false;
+            }
+            
+            if (diagonal1 || diagonal2) {
+                celebrateBingo();
+            }
+        }
+
+        function celebrateBingo() {
+            setTimeout(() => {
+                alert('🎉 BINGO! 🎉\nAmazing work on your social purpose journey!\nYou\'re making a real difference in the world! 🌟');
+            }, 100);
+        }
+
+        function resetBoard() {
+            createBingoBoard();
+        }
+
+        // Initialize the board
+        createBingoBoard();
+    </script>
+</body>
+</html>
